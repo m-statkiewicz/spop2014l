@@ -1,10 +1,9 @@
 module Board where
 import Data.Char
+import State
 import Utils
 
 -- **************** data types *******************
-
-data Piece = Wolf | Sheep deriving (Eq)
 
 data SqColor = Black | White
 
@@ -12,9 +11,17 @@ type Square = (Maybe Piece,SqColor)
 
 type Board = [[Square]]
 
-type Pos = (Int, Int)
-
 -- **************** output functions *******************
+
+setState::Board->State->Board
+setState b [] = b
+--setState b (w,(p1,p2)):sn = 
+--	updateMatrix (p1,p2)	(Just w, Black) (setState b sn) 
+
+setState b [(w,pos)] = 
+	updateMatrix pos (Just Wolf, Black) b
+-- (setState b sn) 
+
 
 prettyBoard::Board->String
 prettyBoard  = unlines . map (concatMap prettySquare)
