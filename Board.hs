@@ -29,9 +29,7 @@ prettyBoard  = unlines . map (concatMap prettySquare)
 prettyBoardIndent::Int->Board->String
 prettyBoardIndent x = ('\n':) . concatMap ((('\n':take x (repeat ' '))++) . concatMap prettySquare)
 
-instance Show Piece where
- show Wolf  = "W"
- show Sheep = "S"
+
 
 prettySquare::Square->String
 prettySquare (Nothing, Black) = "#"
