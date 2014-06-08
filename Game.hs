@@ -24,8 +24,8 @@ getCommand state cmd = do
 		'r':cm -> do
 			if (isValid (move state 0 (getMove cm)) ) 
 			then	
---				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
-				gui (move state 0 (getMove cm))
+				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
+--				gui (move state 0 (getMove cm))
 			else do
 				putStrLn "Wykonano niepoprawny ruch"				
 				gui state

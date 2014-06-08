@@ -79,8 +79,8 @@ getPossibleStates' state (Wolf, pos) = result where
 getPossibleStates' state (Sheep, pos) = result where
 	x = fst pos
 	y = snd pos
-	r1 = if x+1<8 && y+1<8 && (isCollision (addPair (x,y) (1,1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (1,1)))]] else []
-	r2 = if x-1>=0 && y+1<8 && (isCollision (addPair (x,y) (-1,1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (-1,1)))]] else []
+	r1 = if x+1<8 && y-1>=0 && (isCollision (addPair (x,y) (1,-1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (1,-1)))]] else []
+	r2 = if x-1>=0 && y-1>=0 && (isCollision (addPair (x,y) (-1,-1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (-1,-1)))]] else []
 	result = r1 ++ r2
 
 -- sprawdza czy pionek ruszajac sie nie skoliduje sie z innym
