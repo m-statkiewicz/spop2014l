@@ -51,7 +51,7 @@ isPositionValid (x,y) = (x>=0) && (x<=7) && (y>=0) && (y<=7)
 --sprawdza czy pozycja jest zajeta przez inny pionek
 isFree::Pos->State->Bool
 isFree _ [] = True
-isFree pos (s:sn) = (pos!=(getPosition s)) && isFree pos sn
+isFree pos (s:sn) = (pos/=(getPosition s)) && isFree pos sn
 
 --sprawdza czy stan jest poprawny
 isValid::State->Bool
