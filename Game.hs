@@ -18,13 +18,13 @@ getCommand :: State->[Char]->IO()
 getCommand state cmd = do
 	case cmd of
 		'w':_ -> return ()
---		'o':_ -> readState
---		'z':_ -> writeState state
+		'o':_ -> readState
+		'z':_ -> writeState state
 		'n':_ -> gui initialState
 		'r':cm -> do
 			if (isValid (move state 0 (getMove cm)) ) 
 			then	
-				gui (move state 0 (getMove cm))
+				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
 			else 
 				do
 				putStrLn "Wykonano niepoprawny ruch"				
@@ -41,26 +41,23 @@ getMove (c:ch) = result where
 	r = addPair (addPair r1 r2) (addPair r3 r4)
 	result = if r==(0,0) then (8,8) else r
 
-{-
-readState::String->IO()
+readState::IO()
 readState = do
 		putStrLn "Podaj nazwe pliku:"
 		file <- getLine
 		handle <- openFile file ReadMode
+		contents <- hGetContents handle
+		putStrLn(take 9 contents)
 		hClose handle
-		gui testState
+		gui initialState
 
-writeState::String->State->IO()
+
+writeState::State->IO()
 writeState s = do
 		putStrLn "Podaj nazwe pliku:"
 		file <- getLine
 		handle <- openFile file WriteMode
-		write handle s
+		hPutStrLn handle (toText s)
 		hClose handle
+		putStrLn "Zapisano stan gry"
 		gui s
-
-write h [] = []
-write h s = do
-		hPutStrLn h (toText s)
-		write h []
--}
