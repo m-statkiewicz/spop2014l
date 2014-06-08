@@ -7,7 +7,7 @@ import Utils
 -- zwarca ruch dla gracza
 getPlayerMove::State->PieceType->Int->(State, Int)
 getPlayerMove state pieceType depth = result where
-	result = getBestState (getMinmax (getPossibleStates state pieceType) pieceType depth)
+	result = if length (getPossibleStates state pieceType) > 0 then getBestState (getMinmax (getPossibleStates state pieceType) pieceType depth) else (state, 0)
 	
 getMinmax::[State]->PieceType->Int->[(State, Int)]
 getMinmax [] _ _ = []
@@ -60,13 +60,13 @@ getUtility (x:xs) Sheep = result where
 	c1 = if d1 > 2 then sqrt (fromIntegral((fst p2 - fst w)^2+(snd p2 - snd w)^2)) else 0.0
 	c2 = if d2 > 2 then sqrt (fromIntegral((fst p3 - fst w)^2+(snd p3 - snd w)^2)) else 0.0
 	c3 = if d3 > 2 then sqrt (fromIntegral((fst p4 - fst w)^2+(snd p4 - snd w)^2)) else 0.0
-	c4 = if d4 > 2 then sqrt (fromIntegral((fst p4 - fst w)^2+(snd p4 - snd w)^2)) else 0.0
+	--c4 = if d4 > 2 then sqrt (fromIntegral((fst p4 - fst w)^2+(snd p4 - snd w)^2)) else 0.0
 	
 	y1 = snd(snd (xs !! 0))
 	y2 = snd(snd (xs !! 1))
 	y3 = snd(snd (xs !! 2))
 	y4 = snd(snd (xs !! 3))
-	result = 340 - 8*((y1-y2)^2 + (y2-y3)^2 + (y3-y4)^2) - 5*(floor(d1 + d2 + d3) + d0 + d4) - floor(10*(c0 + c1 + c2 + c3 + c4))
+	result = 340 - 15*((y1-y2)^2 + (y2-y3)^2 + (y3-y4)^2) - 5*(floor(d1 + d2 + d3) + d0 + d4) - floor(8*(c0 + c1 + c2 + c3))
 	
 getUtility (x:xs) Wolf = 10*snd(snd x)
 
