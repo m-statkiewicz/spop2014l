@@ -3,6 +3,7 @@ import Data.Char
 import Board
 import State
 import Utils
+import Minmax
 
 game = gui initialState
 
