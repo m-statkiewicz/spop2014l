@@ -11,7 +11,7 @@ getPlayerMove state pieceType depth = result where
 	
 getMinmax::[State]->PieceType->Int->[(State, Int)]
 getMinmax [] _ _ = []
-getMinmax (x:xs) pieceType depth = (x, minmax x pieceType depth pieceType) : getMinmax xs pieceType depth
+getMinmax (x:xs) pieceType depth = (x, minmax x Wolf depth pieceType) : getMinmax xs pieceType depth
 	
 getBestState::[(State, Int)]->(State, Int)
 getBestState [x] = x
@@ -20,7 +20,7 @@ getBestState (x:y:ys) 	| (snd x) > (snd y)	= getBestState(x:ys)
 
 minmax::State->PieceType->Int->PieceType->Int
 minmax state pieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state pieceType else 
-		if k == 0 then 0 else if maximizingPlayer == pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
+		if k == 0 then getUtility state pieceType else if maximizingPlayer /= pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
 			getMin (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer)
 
 getMax::[(State, Int)]->Int
@@ -41,11 +41,22 @@ countMinmax (x:xs) pieceType k maximizingPlayer = result where
 	player = if pieceType == Wolf then Sheep else Wolf
 	result = (x, minmax x player (k-1) maximizingPlayer) : countMinmax xs pieceType k maximizingPlayer
 
+
+getUtility::State->PieceType->Int
+getUtility (x:xs) Sheep = result where
+	y1 = snd(snd (xs !! 0))
+	y2 = snd(snd (xs !! 1))
+	y3 = snd(snd (xs !! 2))
+	y4 = snd(snd (xs !! 3))
+	result = 100 - 10*((y1-y2)^2 + (y2-y3)^2 + (y3-y4)^2)
+	
+getUtility (x:xs) Wolf = 10*snd(snd x)
+
 -- zwraca wartosc funkcji oceny dla wygranej
 getEndGameScore::State->PieceType->Int
-getEndGameScore state Sheep = if isSheepsWin state then 1 else if isWolfWin state then -1 else 0 
+getEndGameScore state Sheep = if isSheepsWin state then 100 else -100
 
-getEndGameScore state Wolf = if isSheepsWin state then -1 else if isWolfWin state then 1 else 0
+getEndGameScore state Wolf = if isSheepsWin state then -100 else 100 
 
 -- czy wilk wygral
 isWolfWin::State->Bool
