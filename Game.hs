@@ -24,20 +24,22 @@ getCommand state cmd = do
 		'r':cm -> do
 			if (isValid (move state 0 (getMove cm)) ) 
 			then	
-				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
-			else 
-				do
+--				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
+				gui (move state 0 (getMove cm))
+			else do
 				putStrLn "Wykonano niepoprawny ruch"				
 				gui state
-		_		->	 putStrLn "Wybrano niepoprawna opcje"
+		_		->	do 
+				putStrLn "Wybrano niepoprawna opcje"
+				gui state
 
 getMove::[Char]->Pos
 getMove [] = (8,8)
 getMove (c:ch) = result where
-	r1 = if c=='7' then ( 1,-1) else (0,0)
+	r1 = if c=='7' then (-1, 1) else (0,0)
 	r2 = if c=='9' then ( 1, 1) else (0,0)
 	r3 = if c=='1' then (-1,-1) else (0,0)
-	r4 = if c=='3' then (-1, 1) else (0,0)
+	r4 = if c=='3' then ( 1,-1) else (0,0)
 	r = addPair (addPair r1 r2) (addPair r3 r4)
 	result = if r==(0,0) then (8,8) else r
 
