@@ -1,4 +1,5 @@
 import System.IO  
+import System.Directory
 import Data.Char
 import Board
 import State
@@ -23,7 +24,6 @@ gui st = if (wolfWin st || sheepWin st)
 				else do 
 			putStrLn "(r)uch[1379], (n)owa gra, (z)apis, (o)dczyt, (w)yjscie"
 			putStrLn (prettyBoard(setState emptyBoard st))
-			--endGame st
 			cmd <- getLine
 			getCommand st cmd
 
@@ -31,7 +31,7 @@ getCommand :: State->[Char]->IO()
 getCommand state cmd = do
 	case cmd of
 		'w':_ -> return ()
-		'o':_ -> readState
+		'o':_ -> readState state
 		'z':_ -> writeState state
 		'n':_ -> gui initialState
 		'r':cm -> do
@@ -55,27 +55,19 @@ getMove (c:ch) = result where
 	r = addPair (addPair r1 r2) (addPair r3 r4)
 	result = if r==(0,0) then (8,8) else r
 
-readState::IO()
-readState = do
+readState::State->IO()
+readState s = do
 			putStrLn "Podaj nazwe pliku:"
 			file <- getLine
-		--	if (doesFileExist file) then do
-		--		putStrLn ("Plik "++ file ++" nie istnieje") 
-		--		gui initialState
-		--	else do
-			handle <- openFile file ReadMode
-			contents <- hGetContents handle
-			--putStrLn(readLine handle)
-			putStrLn(take 9 contents)
-			hClose handle
-
-{-
-readLine :: Handle -> IO String
-readLine h = catch (hGetLine h) errorHandler	where
-				errorHandler e = if isEOFError e
-					then return ""
-					else ioError e-}
-
+			fileExists <- doesFileExist file
+			if fileExists then do
+				handle <- openFile file ReadMode
+				line <- hGetLine handle
+				gui (read line :: State)
+			else do
+				putStrLn "Plik nie istnieje"
+				gui s	
+		
 writeState::State->IO()
 writeState s = do
 		putStrLn "Podaj nazwe pliku:"

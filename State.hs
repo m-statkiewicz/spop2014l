@@ -3,10 +3,17 @@ import Utils
 
 -- **************** data types *******************
 
-data PieceType = Wolf | Sheep deriving Eq
+data PieceType = Wolf | Sheep deriving (Eq)
 instance Show PieceType where
 	show Wolf  = "W"
 	show Sheep = "S"
+instance Read PieceType where
+	readsPrec _ value = tryParse [("W",Wolf),("S",Sheep)]	where
+		tryParse [] = []
+		tryParse ((attempt, result):xs) = 
+			if(take(length attempt) value)==attempt
+				then [(result,drop(length attempt) value)]
+				else tryParse xs
 
 -- przyjmujemy zwykły układ współrzędnych - (0,0) jest w lewym-dolnym rogu, pola numerowane od 0
 type Pos = (Int, Int)
@@ -16,6 +23,7 @@ normalizePosition:: Pos->Pos
 normalizePosition (x, y) = (7-y,x) 
 
 type Piece = (PieceType,Pos)
+
 -- zwraca pozycje pionka
 getPosition::Piece->Pos
 getPosition (t,pos) = pos
@@ -23,7 +31,7 @@ getPosition (t,pos) = pos
 getType::Piece->PieceType
 getType (t,pos) = t
 
-type State = [Piece]
+type State = [Piece] 
 -- zamienia stan na ciąg znaków
 toString::State->String
 toString [] = []
@@ -36,7 +44,8 @@ toString' (x:xs) = toString x ++ " ;; " ++ toString' xs
 -- przygotowuje stan do zapisania do pliku
 toText::State->String
 toText [] = []
-toText (x:xs) = show x ++ "\n" ++ toText xs
+toText s = show s
+--toText (x:xs) = "("++typeName (getType x) ++","++ show (getPosition x) ++ ")\n" ++ toText xs
 
 -- porusza itym pionkiem o pos 
 move::State->Int->Pos->State
