@@ -1,7 +1,6 @@
 module Board where
 import Data.Char
 import State
-import Utils
 
 -- **************** data types *******************
 data SqColor = Black | White
@@ -14,6 +13,14 @@ setState::Board->State->Board
 setState b [] = b
 setState b (p:st) = 
 	updateMatrix (normalizePosition (getPosition p)) (Just (getType p), Black) (setState b st)
+
+updateList::[a]->Int->(a->a)->[a]
+updateList [] _ _ = []
+updateList (x:xs) 0 f = (f x):xs
+updateList (x:xs) n f = x:updateList xs (n-1) f
+
+updateMatrix::(Int, Int)->a->[[a]]->[[a]]
+updateMatrix (i,j) a m = updateList m i (\z->updateList z j (const a)) 
 
 -- **************** output functions *******************
 prettyBoard::Board->String

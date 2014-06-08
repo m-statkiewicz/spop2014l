@@ -1,5 +1,4 @@
 module State where
-import Utils
 
 -- **************** data types *******************
 
@@ -83,6 +82,9 @@ wolfWin [] = False
 wolfWin (s:sn) = (isWolf && is7) || (wolfWin sn) where
 	isWolf = ((getType s) == Wolf)
 	is7 = (snd (getPosition s) == 7)
+
+addPair::(Int,Int)->(Int,Int)->(Int,Int)
+addPair (a,b) (c,d) = (a+c,b+d)
 
 -- **************** some states *******************
 initialState::State
