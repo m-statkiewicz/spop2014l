@@ -2,15 +2,16 @@ module Minmax where
 import Data.Char
 import Board
 import State
+import Utils
 
 -- zwarca ruch dla gracza
-getMove::State->PieceType->Int->(State, Int)
-getMove state PieceType depth = result where
-	result = getBestState (getMinmax (getPossibleStates state PieceType) PieceType depth)
+getPlayerMove::State->PieceType->Int->(State, Int)
+getPlayerMove state pieceType depth = result where
+	result = getBestState (getMinmax (getPossibleStates state pieceType) pieceType depth)
 	
 getMinmax::[State]->PieceType->Int->[(State, Int)]
 getMinmax [] _ _ = []
-getMinmax (x:xs) PieceType depth = (x, minmax x PieceType depth PieceType) : getMinmax xs PieceType depth
+getMinmax (x:xs) pieceType depth = (x, minmax x pieceType depth pieceType) : getMinmax xs pieceType depth
 	
 getBestState::[(State, Int)]->(State, Int)
 getBestState [x] = x
@@ -19,9 +20,9 @@ getBestState (x:y:ys) 	| (snd x) > (snd y)	= getBestState(x:ys)
 
 
 minmax::State->PieceType->Int->PieceType->Int
-minmax state PieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state PieceType else 
-		if k == 0 then 0 else if maximizingPlayer == PieceType then getMax (countMinmax (getPossibleStates state PieceType) PieceType k maximizingPlayer) else 
-			getMin (countMinmax (getPossibleStates state PieceType) PieceType k maximizingPlayer)
+minmax state pieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state pieceType else 
+		if k == 0 then 0 else if maximizingPlayer == pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
+			getMin (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer)
 
 getMax::[(State, Int)]->Int
 getMax [x] = snd x
@@ -35,9 +36,9 @@ getMin (x:y:ys) | (snd x) < (snd y)	= getMin (x:ys)
 
 countMinmax::[State]->PieceType->Int->PieceType->[(State, Int)]
 countMinmax [] _ _ _ = [] 
-countMinmax (x:xs) PieceType k maximizingPlayer = result where
-	player = if PieceType == Wolf then Sheep else Wolf
-	result = (x, minmax x player (k-1) maximizingPlayer) : countMinmax xs PieceType k maximizingPlayer
+countMinmax (x:xs) pieceType k maximizingPlayer = result where
+	player = if pieceType == Wolf then Sheep else Wolf
+	result = (x, minmax x player (k-1) maximizingPlayer) : countMinmax xs pieceType k maximizingPlayer
 
 -- zwraca wartosc funkcji oceny dla wygranej
 getEndGameScore::State->PieceType->Int
@@ -68,17 +69,17 @@ getPossibleStates'::State->(PieceType, Pos)->[State]
 getPossibleStates' state (Wolf, pos) = result where
 	x = fst pos
 	y = snd pos
-	r1 = if x+1<8 && y+1<8 && (isCollision (x+1, y+1) state) == False then [[(Wolf, (x+1, y+1))] ++ state] else []
-	r2 = if x+1<8 && y-1>=0 && (isCollision (x+1, y-1) state) == False then [[(Wolf, (x+1, y-1))] ++ state] else []
-	r3 = if x-1>=0 && y+1<8 && (isCollision (x-1, y+1) state) == False then [[(Wolf, (x-1, y+1))] ++ state] else []
-	r4 = if x-1>=0 && y-1>=0 && (isCollision (x-1, y-1) state) == False then [[(Wolf, (x-1, y-1))] ++ state] else []
+	r1 = if x+1<8 && y+1<8 && (isCollision (addPair (x,y) (1,1)) state) == False then [[(Wolf, (addPair (x,y) (1,1)))] ++ state] else []
+	r2 = if x+1<8 && y-1>=0 && (isCollision (addPair (x,y) (1,-1)) state) == False then [[(Wolf, (addPair (x,y) (1,-1)))] ++ state] else []
+	r3 = if x-1>=0 && y+1<8 && (isCollision (addPair (x,y) (-1,1)) state) == False then [[(Wolf, (addPair (x,y) (-1,1)))] ++ state] else []
+	r4 = if x-1>=0 && y-1>=0 && (isCollision (addPair (x,y) (-1,-1)) state) == False then [[(Wolf, (addPair (x,y) (-1,-1)))] ++ state] else []
 	result = r1 ++ r2 ++ r3 ++ r4
 
 getPossibleStates' state (Sheep, pos) = result where
 	x = fst pos
 	y = snd pos
-	r1 = if x+1<8 && y+1<8 && (isCollision (x+1, y+1) state) == False then [state ++ [(Sheep, (x+1, y+1))]] else []
-	r2 = if x-1>=0 && y+1<8 && (isCollision (x-1, y+1) state) == False then [state ++ [(Sheep, (x-1, y+1))]] else []
+	r1 = if x+1<8 && y+1<8 && (isCollision (addPair (x,y) (1,1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (1,1)))]] else []
+	r2 = if x-1>=0 && y+1<8 && (isCollision (addPair (x,y) (-1,1)) state) == False then [state ++ [(Sheep, (addPair (x,y) (-1,1)))]] else []
 	result = r1 ++ r2
 
 -- sprawdza czy pionek ruszajac sie nie skoliduje sie z innym
