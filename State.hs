@@ -73,7 +73,7 @@ wolfWin::State->Bool
 wolfWin [] = False
 wolfWin (s:sn) = (isWolf && is7) || (wolfWin sn) where
 	isWolf = ((getType s) == Wolf)
-	is7 = (fst (getPosition s) == 7)
+	is7 = (snd (getPosition s) == 7)
 
 -- **************** some states *******************
 initialState::State
