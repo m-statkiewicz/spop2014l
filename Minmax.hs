@@ -44,19 +44,37 @@ countMinmax (x:xs) pieceType k maximizingPlayer = result where
 
 getUtility::State->PieceType->Int
 getUtility (x:xs) Sheep = result where
+	w = snd(x)
+	p1 = snd(xs !! 0)
+	p2 = snd(xs !! 1)
+	p3 = snd(xs !! 2)
+	p4 = snd(xs !! 3)
+	d0 = fst p1
+	d1 = sqrt (fromIntegral((fst p1 - fst p2)^2+(snd p1 - snd p2)^2))
+	d2 = sqrt (fromIntegral((fst p2 - fst p3)^2+(snd p2 - snd p3)^2))
+	d3 = sqrt (fromIntegral((fst p3 - fst p4)^2+(snd p3 - snd p4)^2))
+	d4 = 8 - fst p4
+	
+	-- kara za dziury blisko wilka
+	c0 = if d0 > 2 then sqrt (fromIntegral((fst p1 - fst w)^2+(snd p1 - snd w)^2)) else 0.0
+	c1 = if d1 > 2 then sqrt (fromIntegral((fst p2 - fst w)^2+(snd p2 - snd w)^2)) else 0.0
+	c2 = if d2 > 2 then sqrt (fromIntegral((fst p3 - fst w)^2+(snd p3 - snd w)^2)) else 0.0
+	c3 = if d3 > 2 then sqrt (fromIntegral((fst p4 - fst w)^2+(snd p4 - snd w)^2)) else 0.0
+	c4 = if d4 > 2 then sqrt (fromIntegral((fst p4 - fst w)^2+(snd p4 - snd w)^2)) else 0.0
+	
 	y1 = snd(snd (xs !! 0))
 	y2 = snd(snd (xs !! 1))
 	y3 = snd(snd (xs !! 2))
 	y4 = snd(snd (xs !! 3))
-	result = 100 - 10*((y1-y2)^2 + (y2-y3)^2 + (y3-y4)^2)
+	result = 340 - 8*((y1-y2)^2 + (y2-y3)^2 + (y3-y4)^2) - 5*(floor(d1 + d2 + d3) + d0 + d4) - floor(10*(c0 + c1 + c2 + c3 + c4))
 	
 getUtility (x:xs) Wolf = 10*snd(snd x)
 
 -- zwraca wartosc funkcji oceny dla wygranej
 getEndGameScore::State->PieceType->Int
-getEndGameScore state Sheep = if isSheepsWin state then 100 else -100
+getEndGameScore state Sheep = if isSheepsWin state then 300 else -300
 
-getEndGameScore state Wolf = if isSheepsWin state then -100 else 100 
+getEndGameScore state Wolf = if isSheepsWin state then -300 else 300 
 
 -- czy wilk wygral
 isWolfWin::State->Bool
