@@ -2,7 +2,6 @@ module Minmax where
 import Data.Char
 import Board
 import State
-import Utils
 
 -- zwarca ruch dla gracza
 getPlayerMove::State->PieceType->Int->(State, Int)

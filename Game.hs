@@ -3,7 +3,6 @@ import System.Directory
 import Data.Char
 import Board
 import State
-import Utils
 import Minmax
 
 main = game
