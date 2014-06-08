@@ -1,16 +1,29 @@
-import System.IO
+import System.IO  
 import Data.Char
 import Board
 import State
 import Utils
 import Minmax
 
+main = game
+
 game = gui initialState
 
 gui :: State->IO()
-gui st = do 
+gui st = if (wolfWin st || sheepWin st)
+					then
+						do
+						putStrLn (prettyBoard(setState emptyBoard st))
+						putStr "Gra zakonczona."
+						if (sheepWin st)
+							then
+								putStrLn "Wygraly owce."
+							else
+								putStrLn "Zwyciezyl wilk."
+				else do 
 			putStrLn "(r)uch[1379], (n)owa gra, (z)apis, (o)dczyt, (w)yjscie"
 			putStrLn (prettyBoard(setState emptyBoard st))
+			--endGame st
 			cmd <- getLine
 			getCommand st cmd
 
@@ -25,7 +38,6 @@ getCommand state cmd = do
 			if (isValid (move state 0 (getMove cm)) ) 
 			then	
 				gui (fst (getPlayerMove (move state 0 (getMove cm)) Sheep 5))
---				gui (move state 0 (getMove cm))
 			else do
 				putStrLn "Wykonano niepoprawny ruch"				
 				gui state
@@ -45,14 +57,24 @@ getMove (c:ch) = result where
 
 readState::IO()
 readState = do
-		putStrLn "Podaj nazwe pliku:"
-		file <- getLine
-		handle <- openFile file ReadMode
-		contents <- hGetContents handle
-		putStrLn(take 9 contents)
-		hClose handle
-		gui initialState
+			putStrLn "Podaj nazwe pliku:"
+			file <- getLine
+		--	if (doesFileExist file) then do
+		--		putStrLn ("Plik "++ file ++" nie istnieje") 
+		--		gui initialState
+		--	else do
+			handle <- openFile file ReadMode
+			contents <- hGetContents handle
+			--putStrLn(readLine handle)
+			putStrLn(take 9 contents)
+			hClose handle
 
+{-
+readLine :: Handle -> IO String
+readLine h = catch (hGetLine h) errorHandler	where
+				errorHandler e = if isEOFError e
+					then return ""
+					else ioError e-}
 
 writeState::State->IO()
 writeState s = do
