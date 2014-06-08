@@ -18,8 +18,8 @@ getBestState (x:y:ys) 	| (snd x) > (snd y)	= getBestState(x:ys)
 						| otherwise 		= getBestState(y:ys)
 
 minmax::State->PieceType->Int->PieceType->Int
-minmax state pieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state pieceType else 
-		if k == 0 then getUtility state pieceType else if maximizingPlayer /= pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
+minmax state pieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state maximizingPlayer else 
+		if k == 0 then getUtility state pieceType else if maximizingPlayer == pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
 			getMin (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer)
 
 getMax::[(State, Int)]->Int
@@ -77,7 +77,7 @@ getEndGameScore state Wolf = if isSheepsWin state then -300 else 300
 
 -- czy wilk wygral
 isWolfWin::State->Bool
-isWolfWin (x:xs) = if snd(snd x) == 0 then True else False
+isWolfWin (x:xs) = if snd(snd x) == 7 then True else False
 
 -- czy owce wygraly
 isSheepsWin::State->Bool
