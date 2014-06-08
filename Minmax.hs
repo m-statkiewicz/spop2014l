@@ -18,18 +18,19 @@ getBestState [x] = x
 getBestState (x:y:ys) 	| (snd x) > (snd y)	= getBestState(x:ys)
 						| otherwise 		= getBestState(y:ys)
 
-
 minmax::State->PieceType->Int->PieceType->Int
 minmax state pieceType k maximizingPlayer = if (isWolfWin state || isSheepsWin state) then getEndGameScore state pieceType else 
 		if k == 0 then 0 else if maximizingPlayer == pieceType then getMax (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer) else 
 			getMin (countMinmax (getPossibleStates state pieceType) pieceType k maximizingPlayer)
 
 getMax::[(State, Int)]->Int
+getMax [] = 0
 getMax [x] = snd x
 getMax (x:y:ys) | (snd x) > (snd y)	= getMax (x:ys)
 				| otherwise 		= getMax (y:ys)
 
 getMin::[(State, Int)]->Int
+getMin [] = 0
 getMin [x] = snd x
 getMin (x:y:ys) | (snd x) < (snd y)	= getMin (x:ys)
 				| otherwise 		= getMin (y:ys)
